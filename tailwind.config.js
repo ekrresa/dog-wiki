@@ -1,4 +1,5 @@
 module.exports = {
+  mode: 'jit',
   purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
   darkMode: false,
   theme: {
@@ -19,7 +20,11 @@ module.exports = {
         primary: ['Montserrat', 'sans-serif'],
         cursive: ['Mystery Quest', 'cursive'],
       },
-      maxWidth: { tiny: '5rem', breed: '23rem' },
+      gridTemplateColumns: {
+        175: 'repeat(auto-fit, minmax(175px, 1fr))',
+      },
+      maxWidth: { tiny: '5rem', breed: '23rem', hero: '16rem', "heroImg":"30rem" },
+      minWidth: {  "heroImg":"9rem" },
       padding: {
         tiny: '1.6px',
       },
