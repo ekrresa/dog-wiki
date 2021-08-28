@@ -54,18 +54,20 @@ export default function Home(props: any) {
             </div>
           </div>
 
-          <section className="grid grid-cols-175 gap-x-6 pt-14">
+          <section className="grid grid-cols-175 gap-x-6 gap-y-4 pt-14">
             {props.data.map((item: any) => (
-              <div className="flex flex-col" key={item.id}>
+              <div className="flex flex-col h-56" key={item.id}>
                 <Image
-                  className="!rounded-3xl h-48 object-cover"
+                  className="!rounded-3xl object-cover"
                   src={item.image.url}
                   width={100}
                   height={200}
                   alt=""
                   unoptimized
                 />
-                <p className="text-primary mt-3 font-semibold text-lg">{item.name}</p>
+                <p className="text-primary mt-3 font-semibold py-1 text-base  sm:text-lg truncate">
+                  {item.name}
+                </p>
               </div>
             ))}
           </section>
@@ -83,10 +85,15 @@ export default function Home(props: any) {
               Having a dog around you can actually trigger the release of calming
               chemicals in your body which lower your stress and anxiety leves
             </p>
-            <div className="mt-8 text-enamel">
+            <a
+              href="https://www.purina.co.uk/find-a-pet/articles/getting-a-dog/adoption/benefits-of-having-a-dog#:~:text=Dogs%20provide%20us%20with%20a,personal%20trauma%2C%20such%20as%20bereavement."
+              className="inline-block mt-8 text-enamel"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
               <span className="font-semibold  uppercase">read more</span>
               <span className=" ml-2">&rarr;</span>
-            </div>
+            </a>
           </div>
           <div className="grid grid-cols-2 grid-rows-2 gap-5 h-[28rem] md:h-[35rem]">
             <div className="h-full overflow-hidden  relative rounded-3xl">

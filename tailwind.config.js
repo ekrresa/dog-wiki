@@ -21,7 +21,7 @@ module.exports = {
         cursive: ['Mystery Quest', 'cursive'],
       },
       gridTemplateColumns: {
-        175: 'repeat(auto-fit, minmax(175px, 1fr))',
+        175: 'repeat(auto-fit, minmax(160px, 1fr))',
       },
       maxWidth: { tiny: '5rem', breed: '23rem', hero: '16rem', heroImg: '30rem' },
       minWidth: { heroImg: '9rem' },
