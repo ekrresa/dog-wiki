@@ -23,11 +23,9 @@ module.exports = {
       gridTemplateColumns: {
         175: 'repeat(auto-fit, minmax(175px, 1fr))',
       },
-      maxWidth: { tiny: '5rem', breed: '23rem', hero: '16rem', "heroImg":"30rem" },
-      minWidth: {  "heroImg":"9rem" },
-      padding: {
-        tiny: '1.6px',
-      },
+      maxWidth: { tiny: '5rem', breed: '23rem', hero: '16rem', heroImg: '30rem' },
+      minWidth: { heroImg: '9rem' },
+      screens: { sm: '540px' },
     },
   },
   variants: {

@@ -6,8 +6,8 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: Montserrat, sans-serif;
-  background: #fff;
+  font-family: @apply font-primary;
+  background: @apply text-white;
 }
 
 a {
