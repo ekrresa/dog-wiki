@@ -1,11 +1,16 @@
 import Head from 'next/head';
 import Image from 'next/image';
+import Link from 'next/link';
 import axios from 'axios';
 
 import Paw from '../public/paw.svg';
 import Search from '../public/search.svg';
 
 export default function Home(props: any) {
+  if (props.error) {
+    return <div className="text-center text-lg">{props.error}</div>;
+  }
+
   return (
     <>
       <Head>
@@ -48,10 +53,12 @@ export default function Home(props: any) {
               99+ Breeds for you to discover
             </h2>
 
-            <div className="flex items-end sm:justify-end text-enamel whitespace-nowrap">
-              <span className="font-semibold uppercase">see more</span>
-              <span className="ml-2">&rarr;</span>
-            </div>
+            <Link href="/dogs" passHref>
+              <a className="flex items-end sm:justify-end text-enamel whitespace-nowrap">
+                <span className="font-semibold uppercase">see more</span>
+                <span className="ml-2">&rarr;</span>
+              </a>
+            </Link>
           </div>
 
           <section className="grid grid-cols-175 gap-x-6 gap-y-4 pt-14">
@@ -74,7 +81,7 @@ export default function Home(props: any) {
         </section>
       </main>
 
-      <section className="container mt-24">
+      <section className="container mt-24 mb-32">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="">
             <div className="bg-mud rounded-3xl max-w-tiny p-[1.6px]"></div>
@@ -133,11 +140,17 @@ export default function Home(props: any) {
 }
 
 export async function getServerSideProps() {
-  const response = await axios.get('https://api.thedogapi.com/v1/breeds?limit=4', {
-    headers: { 'x-api-key': process.env.DOG_API_KEY },
-  });
+  try {
+    const response = await axios.get('https://api.thedogapi.com/v1/breeds?limit=4', {
+      headers: { 'x-api-key': process.env.DOG_API_KEY },
+    });
 
-  return {
-    props: { data: response.data },
-  };
+    return {
+      props: { data: response.data, error: null },
+    };
+  } catch (error) {
+    return {
+      props: { data: null, error: 'There was an error. Please try again later' },
+    };
+  }
 }
