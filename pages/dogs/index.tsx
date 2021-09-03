@@ -20,7 +20,21 @@ export default function AllDogs() {
       <h1 className="text-4xl font-semibold">Breeds of Dogs</h1>
 
       {breeds.isLoading ? (
-        <div>Loading...</div>
+        <div className="animate-pulse mt-10">
+          {new Array(5).fill(1).map((_, index) => (
+            <div key={index} className="flex mb-8 last:mb-0">
+              <div className="h-48 w-48 bg-gray-200 rounded-2xl mr-10"></div>
+
+              <div className="flex-1">
+                <div className="h-8 bg-gray-200 mb-4 rounded"></div>
+                <div className="h-4 bg-gray-200 mb-2 rounded"></div>
+                <div className="h-4 bg-gray-200 mb-2 rounded"></div>
+                <div className="h-4 bg-gray-200 mb-2 rounded"></div>
+                <div className="h-4 bg-gray-200 mb-2 rounded"></div>
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
         <section className="mt-10">
           {breeds.data!.map((breed: Breed) => (
