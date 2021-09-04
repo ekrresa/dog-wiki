@@ -9,7 +9,7 @@ import { Breed } from '../../lib/types';
 
 export default function AllDogs() {
   const { ref, inView, entry } = useInView({
-    rootMargin: '0px 0px 0px 300px',
+    rootMargin: '0px 0px 500px 0px',
   });
 
   const infiniteBreeds = useInfiniteQuery(
