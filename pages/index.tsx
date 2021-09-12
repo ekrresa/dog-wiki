@@ -1,12 +1,27 @@
+import { useState } from 'react';
+import { useQuery } from 'react-query';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
+import { ComboBox } from '../components/ComboBox';
+import { Breed } from '../lib/types';
+import { apiQueryHandler } from '../lib/query';
 import Paw from '../public/paw.svg';
-import Search from '../public/search.svg';
 
 export default function Home(props: any) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedItem, setSelectedItem] = useState<Breed | null>();
+
+  const breedSearch = useQuery<Breed[], AxiosError>(
+    ['breedSearch', searchTerm],
+    () => apiQueryHandler(searchTerm),
+    {
+      enabled: searchTerm.length > 0,
+    }
+  );
+
   if (props.error) {
     return <div className="text-center text-lg">{props.error}</div>;
   }
@@ -19,7 +34,7 @@ export default function Home(props: any) {
       </Head>
 
       <main className="container">
-        <section className="rounded-t-large bg-hero-color flex justify-between">
+        <section className="isolate overflow-hidden rounded-t-large relative bg-hero-color flex justify-between">
           <section className="flex flex-col flex-shrink justify-center text-white pl-6 pr-2 pb-12 pt-7 md:pl-20">
             <div className="flex items-center">
               <span className="text-3xl md:text-5xl font-cursive mr-5">DogWiki</span>
@@ -28,17 +43,20 @@ export default function Home(props: any) {
 
             <p className="mt-7 mb-10 text-xl">Get to know more about your dog breed</p>
 
-            <div className="bg-white flex items-center rounded-large2 px-5 py-3">
-              <input
-                className="focus:outline-none flex-grow w-16 min-w-[7rem] px-4 py-1 rounded-inherit text-black"
-                placeholder="Search"
+            <div className="flex items-center rounded-large2 py-3">
+              <ComboBox
+                className="px-4 py-2"
+                data={breedSearch.data || []}
+                loading={breedSearch.isLoading}
+                isError={breedSearch.isError}
+                onChange={setSearchTerm}
+                selectItem={setSelectedItem}
               />
-              <Search className="w-6" />
             </div>
           </section>
 
           <img
-            className="flex-grow-0 object-cover max-w-heroImg min-w-[8rem] rounded-tr-large"
+            className="absolute inset-0 sm:static z-[-1] flex-grow-0 object-cover max-w-heroImg min-w-[8rem] rounded-tr-large"
             src="/hero.jpg"
             alt=""
           />

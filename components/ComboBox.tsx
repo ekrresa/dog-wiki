@@ -5,6 +5,7 @@ import { Breed } from '../lib/types';
 import Search from '../public/search.svg';
 
 type ComboBoxProps = {
+  className?: string;
   data: Breed[] | undefined;
   isError: boolean;
   loading: boolean;
@@ -13,6 +14,7 @@ type ComboBoxProps = {
 };
 
 export function ComboBox({
+  className = '',
   data,
   isError,
   loading,
@@ -46,11 +48,11 @@ export function ComboBox({
   return (
     <div className="flex flex-col flex-1 relative">
       <div
-        className="flex flex-1 border-2 border-black items-center rounded-[2.5rem]"
+        className={`flex flex-1 bg-white border-2 border-black items-center rounded-[2.5rem] ${className}`}
         {...getComboboxProps()}
       >
         <input
-          className="focus:outline-none flex-1 min-w-[8rem] px-4 py-1 rounded-inherit text-black"
+          className={`focus:outline-none flex-1 min-w-[8rem] px-2 py-2 rounded-inherit text-black`}
           placeholder="Search"
           {...getInputProps()}
         />
@@ -64,7 +66,7 @@ export function ComboBox({
       </div>
 
       <ul
-        className={`bg-white border absolute max-h-96 overflow-auto p-1 rounded-[1rem] shadow-md w-full top-[110%] ${
+        className={`bg-white text-black border absolute max-h-96 overflow-auto p-1 rounded-[1rem] shadow-md w-full top-[110%] ${
           isOpen ? 'visible' : 'invisible'
         }`}
         {...getMenuProps()}

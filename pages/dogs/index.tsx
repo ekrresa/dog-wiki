@@ -3,7 +3,6 @@ import Head from 'next/head';
 import { AxiosError } from 'axios';
 import { useInfiniteQuery, useQuery } from 'react-query';
 import { useInView } from 'react-intersection-observer';
-import { useCombobox } from 'downshift';
 
 import {
   apiQueryHandler,
