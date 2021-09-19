@@ -52,8 +52,8 @@ export function ComboBox({
         {...getComboboxProps()}
       >
         <input
-          className={`focus:outline-none flex-1 min-w-[8rem] px-2 py-2 rounded-inherit text-black`}
-          placeholder="Search"
+          className={`focus:outline-none flex-1 min-w-[8rem] px-6 py-2 rounded-inherit text-black`}
+          placeholder="Search..."
           {...getInputProps()}
         />
         {selectedItem ? (
