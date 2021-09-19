@@ -1,21 +1,38 @@
-import { Fragment, useEffect } from 'react';
-import Image from 'next/image';
-import { useInfiniteQuery } from 'react-query';
+import { Fragment, useEffect, useState } from 'react';
+import Head from 'next/head';
+import { AxiosError } from 'axios';
+import { useInfiniteQuery, useQuery } from 'react-query';
 import { useInView } from 'react-intersection-observer';
-import { getName } from 'country-list';
 
-import { infiniteQueryHandler } from '../../lib/query';
+import {
+  apiQueryHandler,
+  infiniteQueryHandler,
+  QueryHandlerResponse,
+} from '../../lib/query';
+import { ComboBox } from '../../components/ComboBox';
+import { BreedView } from '../../components/Breed';
 import { Breed } from '../../lib/types';
 
 export default function AllDogs() {
   const { ref, inView, entry } = useInView({
     rootMargin: '0px 0px 500px 0px',
   });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedItem, setSelectedItem] = useState<Breed | null>();
 
-  const infiniteBreeds = useInfiniteQuery(
+  const breedSearch = useQuery<Breed[], AxiosError>(
+    ['breedSearch', searchTerm],
+    () => apiQueryHandler(searchTerm),
+    {
+      enabled: searchTerm.length > 0,
+    }
+  );
+
+  const infiniteBreeds = useInfiniteQuery<QueryHandlerResponse, AxiosError>(
     ['infiniteBreeds'],
     ({ pageParam = 1 }) => infiniteQueryHandler(pageParam),
     {
+      enabled: !Boolean(selectedItem),
       getNextPageParam(lastPage) {
         if (lastPage.data.length !== 0) {
           return Number(lastPage.page) + 1;
@@ -25,77 +42,77 @@ export default function AllDogs() {
   );
 
   useEffect(() => {
-    if (entry?.isIntersecting && !infiniteBreeds.isFetchingNextPage) {
+    if (entry?.isIntersecting && !infiniteBreeds.isFetchingNextPage && !selectedItem) {
       infiniteBreeds.fetchNextPage();
     }
-  }, [entry?.isIntersecting, infiniteBreeds]);
+  }, [entry?.isIntersecting, infiniteBreeds, selectedItem]);
+
+  if (infiniteBreeds.isError) {
+    console.log(infiniteBreeds.error.response);
+  }
 
   return (
-    <section className="container mb-32 mt-4">
-      <h1 className="text-4xl font-semibold">Breeds of Dogs</h1>
+    <>
+      <Head>
+        <title>All Breeds - Dog Wiki</title>
+        <meta name="description" content="A repository of dogs." />
+      </Head>
 
-      {infiniteBreeds.isLoading ? (
-        <div className="animate-pulse mt-10">
-          {new Array(5).fill(1).map((_, index) => (
-            <div key={index} className="flex mb-8 last:mb-0">
-              <div className="h-48 w-48 bg-gray-200 rounded-2xl mr-10"></div>
+      <section className="container mb-32 mt-4">
+        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-6">
+          <h1 className="text-4xl flex-auto font-semibold">Breeds of Dogs</h1>
 
-              <div className="flex-1">
-                <div className="h-8 bg-gray-200 mb-4 rounded"></div>
-                <div className="h-4 bg-gray-200 mb-2 rounded"></div>
-                <div className="h-4 bg-gray-200 mb-2 rounded"></div>
-                <div className="h-4 bg-gray-200 mb-2 rounded"></div>
-                <div className="h-4 bg-gray-200 mb-2 rounded"></div>
-              </div>
-            </div>
-          ))}
+          <ComboBox
+            data={breedSearch.data || []}
+            loading={breedSearch.isLoading}
+            isError={breedSearch.isError}
+            onChange={setSearchTerm}
+            selectItem={setSelectedItem}
+          />
         </div>
-      ) : (
-        <section className="mt-10">
-          {infiniteBreeds.data?.pages.map(page => (
-            <Fragment key={page.page}>
-              {page.data.map((breed: Breed) => (
-                <div key={breed.id} className="sm:flex mb-8 last:mb-0 overflow-auto">
-                  <div className="float-left sm:float-none h-28 w-28 sm:h-36 sm:w-36 md:h-48 md:w-48 flex-shrink-0 rounded-2xl overflow-hidden relative mr-6 md:mr-10 mb-4 sm:mb-0">
-                    <Image src={breed.image.url} layout="fill" objectFit="cover" alt="" />
-                  </div>
 
-                  <div>
-                    <h3 className="font-semibold text-xl md:text-2xl mb-2">
-                      {breed.name}
-                    </h3>
-
-                    <p className="mb-1">
-                      <span>The {breed.name} is a </span>
-                      <span className="lowercase">{breed.temperament} dog.</span>
-                      <span> It was originally developed for </span>
-                      <span className="lowercase">{breed.bred_for}.</span>
-                      <span> Weight ranges from </span>
-                      <span>
-                        {breed.weight.metric.split('-').join('to')} kilogrammes.
-                      </span>
-                      <span> They live on average for </span>
-                      <span>{breed.life_span.split('-').join('to')}.</span>
-                      {breed.country_code && (
-                        <span> Originally bred in {getName(breed.country_code)}.</span>
-                      )}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </Fragment>
-          ))}
-        </section>
-      )}
-
-      <div ref={ref}>
-        {infiniteBreeds.isFetchingNextPage && inView && (
-          <div className="animate-pulse mt-8">
-            <div className="h-8 bg-gray-200 mb-4 rounded"></div>
-            <div className="h-8 bg-gray-200 rounded"></div>
+        {selectedItem ? (
+          <div>
+            <h2 className="my-8 text-xl"> Search Results...</h2>
+            <BreedView {...selectedItem} />
           </div>
+        ) : infiniteBreeds.isLoading ? (
+          <div className="animate-pulse mt-10">
+            {new Array(5).fill(1).map((_, index) => (
+              <div key={index} className="flex mb-8 last:mb-0">
+                <div className="h-48 w-48 bg-gray-200 rounded-2xl mr-10"></div>
+
+                <div className="flex-1">
+                  <div className="h-8 bg-gray-200 mb-4 rounded"></div>
+                  <div className="h-4 bg-gray-200 mb-2 rounded"></div>
+                  <div className="h-4 bg-gray-200 mb-2 rounded"></div>
+                  <div className="h-4 bg-gray-200 mb-2 rounded"></div>
+                  <div className="h-4 bg-gray-200 mb-2 rounded"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <section className="mt-10">
+            {infiniteBreeds.data?.pages.map(page => (
+              <Fragment key={page.page}>
+                {page.data.map((breed: Breed) => (
+                  <BreedView key={breed.id} {...breed} />
+                ))}
+              </Fragment>
+            ))}
+          </section>
         )}
-      </div>
-    </section>
+
+        <div ref={ref}>
+          {infiniteBreeds.isFetchingNextPage && inView && (
+            <div className="animate-pulse mt-8">
+              <div className="h-8 bg-gray-200 mb-4 rounded"></div>
+              <div className="h-8 bg-gray-200 rounded"></div>
+            </div>
+          )}
+        </div>
+      </section>
+    </>
   );
 }
