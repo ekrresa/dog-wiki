@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { AxiosError } from 'axios';
 import { useInfiniteQuery, useQuery } from 'react-query';
 import { useInView } from 'react-intersection-observer';
+import { IoCloseCircle } from 'react-icons/io5';
 
 import {
   apiQueryHandler,
@@ -12,6 +13,7 @@ import {
 import { ComboBox } from '../../components/ComboBox';
 import { BreedView } from '../../components/Breed';
 import { Breed } from '../../lib/types';
+import { useBreedContext } from '../../lib/breed';
 
 export default function AllDogs() {
   const { ref, inView, entry } = useInView({
@@ -19,6 +21,7 @@ export default function AllDogs() {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedItem, setSelectedItem] = useState<Breed | null>();
+  const breedContext = useBreedContext();
 
   const breedSearch = useQuery<Breed[], AxiosError>(
     ['breedSearch', searchTerm],
@@ -32,7 +35,6 @@ export default function AllDogs() {
     ['infiniteBreeds'],
     ({ pageParam = 1 }) => infiniteQueryHandler(pageParam),
     {
-      enabled: !Boolean(selectedItem),
       getNextPageParam(lastPage) {
         if (lastPage.data.length !== 0) {
           return Number(lastPage.page) + 1;
@@ -42,10 +44,15 @@ export default function AllDogs() {
   );
 
   useEffect(() => {
-    if (entry?.isIntersecting && !infiniteBreeds.isFetchingNextPage && !selectedItem) {
+    if (
+      entry?.isIntersecting &&
+      !infiniteBreeds.isFetchingNextPage &&
+      !selectedItem &&
+      !breedContext?.breed
+    ) {
       infiniteBreeds.fetchNextPage();
     }
-  }, [entry?.isIntersecting, infiniteBreeds, selectedItem]);
+  }, [breedContext?.breed, entry?.isIntersecting, infiniteBreeds, selectedItem]);
 
   if (infiniteBreeds.isError) {
     console.log(infiniteBreeds.error.response);
@@ -75,6 +82,18 @@ export default function AllDogs() {
           <div>
             <h2 className="my-8 text-xl"> Search Results...</h2>
             <BreedView {...selectedItem} />
+          </div>
+        ) : breedContext?.breed ? (
+          <div>
+            <h2 className="my-8 text-xl"> Search Results...</h2>
+            <BreedView {...breedContext.breed} />
+            <button
+              className="bg-[#000000cc] flex items-center px-2 py-3 rounded-lg text-sm text-white w-28 sm:w-36 md:w-48"
+              onClick={() => breedContext.manageBreed(null)}
+            >
+              <IoCloseCircle className="text-lg" color="white" />
+              <span className="ml-2">Clear search results</span>
+            </button>
           </div>
         ) : infiniteBreeds.isLoading ? (
           <div className="animate-pulse mt-10">

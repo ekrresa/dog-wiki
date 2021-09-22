@@ -3,16 +3,19 @@ import { useQuery } from 'react-query';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import axios, { AxiosError } from 'axios';
 
 import { ComboBox } from '../components/ComboBox';
 import { Breed } from '../lib/types';
 import { apiQueryHandler } from '../lib/query';
+import { useBreedContext } from '../lib/breed';
 import Paw from '../public/paw.svg';
 
 export default function Home(props: any) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedItem, setSelectedItem] = useState<Breed | null>();
+  const breedContext = useBreedContext();
+  const router = useRouter();
 
   const breedSearch = useQuery<Breed[], AxiosError>(
     ['breedSearch', searchTerm],
@@ -21,6 +24,13 @@ export default function Home(props: any) {
       enabled: searchTerm.length > 0,
     }
   );
+
+  const storeBreed = (breed: Breed | null | undefined) => {
+    if (breed) {
+      breedContext?.manageBreed(breed);
+      router.push('/dogs');
+    }
+  };
 
   if (props.error) {
     return <div className="text-center text-lg">{props.error}</div>;
@@ -34,7 +44,7 @@ export default function Home(props: any) {
       </Head>
 
       <main className="container">
-        <section className="isolate overflow-hidden rounded-t-large relative bg-hero-color flex justify-between">
+        <section className="isolate rounded-t-large relative bg-hero-color flex justify-between">
           <section className="flex flex-col flex-shrink justify-center text-white pl-6 pr-2 pb-12 pt-7 md:pl-20">
             <div className="flex items-center">
               <span className="text-3xl md:text-5xl font-cursive mr-5">DogWiki</span>
@@ -50,13 +60,13 @@ export default function Home(props: any) {
                 loading={breedSearch.isLoading}
                 isError={breedSearch.isError}
                 onChange={setSearchTerm}
-                selectItem={setSelectedItem}
+                selectItem={storeBreed}
               />
             </div>
           </section>
 
           <img
-            className="absolute inset-0 sm:static z-[-1] flex-grow-0 object-cover max-w-heroImg min-w-[8rem] rounded-tr-large"
+            className="absolute inset-0 sm:static z-[-1] flex-grow-0 h-full object-cover max-w-heroImg min-w-[8rem] rounded-t-large"
             src="/hero.jpg"
             alt=""
           />

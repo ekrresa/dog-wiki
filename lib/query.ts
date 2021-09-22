@@ -5,7 +5,7 @@ const source = axios.CancelToken.source();
 const axiosInstance = axios.create({
   cancelToken: source.token,
   headers: { 'x-api-token': process.env.DOG_API_KEY },
-  timeout: 3000,
+  timeout: 6000,
 });
 
 export type QueryHandlerResponse = {
