@@ -3,6 +3,7 @@ import Head from 'next/head';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 
+import { BreedProvider } from '../lib/breed';
 import { Layout } from '../components/Layout';
 import '../styles/globals.css';
 
@@ -18,9 +19,11 @@ function MyApp({ Component, pageProps }: AppProps) {
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Layout>
-        <Component {...pageProps} />
-      </Layout>
+      <BreedProvider>
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      </BreedProvider>
       <ReactQueryDevtools />
     </QueryClientProvider>
   );

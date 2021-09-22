@@ -31,17 +31,14 @@ export function ComboBox({
     reset,
     selectedItem,
   } = useCombobox({
+    id: 'breed-autocomplete',
     items: data || [],
     itemToString: breed => (breed ? breed.name : ''),
     onInputValueChange: ({ inputValue }) => {
       onChange(inputValue as string);
     },
     onStateChange: ({ selectedItem }) => {
-      if (selectedItem) {
-        selectItem(selectedItem);
-      } else {
-        selectItem(selectedItem);
-      }
+      selectItem(selectedItem);
     },
   });
 
@@ -66,7 +63,7 @@ export function ComboBox({
       </div>
 
       <ul
-        className={`bg-white text-black border absolute max-h-96 overflow-auto p-1 rounded-[1rem] shadow-md w-full top-[110%] ${
+        className={`bg-white text-black border absolute max-h-72 overflow-auto p-1 rounded-[1rem] shadow-md w-full top-[110%] z-[50] ${
           isOpen ? 'visible' : 'invisible'
         }`}
         {...getMenuProps()}
